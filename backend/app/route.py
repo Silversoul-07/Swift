@@ -1,5 +1,7 @@
 from fastapi import  Depends, HTTPException, status, APIRouter, Form, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.encoders import jsonable_encoder
+
 from sqlalchemy.orm import Session
 from typing import List
 from app import crud, schemas
@@ -125,10 +127,11 @@ async def login_for_access_token(form_data: schemas.AuthForm, db: Session = Depe
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/session", response_model=schemas.User, tags=["auth"])
+@router.get("/session", response_model=schemas.UserResponse, tags=["auth"])
 async def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     email = get_email_from_token(token)
     user = crud.get_user_by_email(db, email)
+    print(jsonable_encoder(user))
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user

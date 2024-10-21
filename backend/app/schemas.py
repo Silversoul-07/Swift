@@ -12,17 +12,21 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
+    hashed_password: str
+
+class UserResponse(UserBase):
+    id: int
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 class AuthForm(BaseModel):
-    email:str
-    password:str
+    email: str
+    password: str
 
 class CourseBase(BaseModel):
     id: int
@@ -37,9 +41,12 @@ class CourseBase(BaseModel):
     faculty_name: str
     faculty_school: str
 
+    class Config:
+        orm_mode = True
+
 class CourseRegister(CourseBase):
     registered: bool
-    
+
 class CourseCreate(CourseBase):
     pass
 
@@ -49,7 +56,7 @@ class Attendance(BaseModel):
     date: datetime
     day: str
     slot: str
-    status: bool    
+    status: bool
 
 class AttendanceView(BaseModel):
     user_id: int
@@ -60,6 +67,7 @@ class AttendanceView(BaseModel):
     status: bool
     course: CourseBase
     user: UserBase
+
     class Config:
         form_attribute = True
 
