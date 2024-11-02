@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app import crud, schemas
 from typing import Optional
 from app.database import SessionLocal
+import os
 
 SECRET_KEY = "YOUR_SECRET_KEY"
 ALGORITHM = "HS256"
@@ -67,10 +68,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 import boto3
-import base64
+import dotenv
+
+dotenv.load_dotenv()
 
 # Initialize the Rekognition client
-rekognition = boto3.client('rekognition')
+rekognition = boto3.client('rekognition',
+                           aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+                            aws_secret_access_key=os.getenv('AWS_SECRET_KEY'),
+                            region_name='ap-south-1')
 
 # Create a collection
 def create_collection(collection_id):
@@ -96,7 +102,7 @@ def recognize_face(collection_id, image_bytes):
         CollectionId=collection_id,
         Image={'Bytes': image_bytes},
         MaxFaces=1,
-        FaceMatchThreshold=95
+        FaceMatchThreshold=75
     )
     
     if response['FaceMatches']:

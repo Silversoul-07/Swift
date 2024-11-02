@@ -4,8 +4,8 @@ from fastapi.encoders import jsonable_encoder
 
 from sqlalchemy.orm import Session
 from typing import List
-from app import crud, schemas
-from app.utils import get_current_user, create_access_token, authenticate_user, get_db, get_email_from_token, index_face
+from . import crud, schemas
+from .utils import get_current_user, create_access_token, authenticate_user, get_db, get_email_from_token, index_face, recognize_face
 from datetime import timedelta
 import base64
 
@@ -80,12 +80,6 @@ def find_slot(day, time):
                 return slot
     return None
 
-# Example usage
-day = "Monday"
-time = "09:30 AM"
-slot = find_slot(day, time)
-print(f"The slot for {day} at {time} is {slot}")
-
 
 router = APIRouter(prefix="/api")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -109,7 +103,6 @@ def create_user(
     user = schemas.UserCreate(username=username, email=email, password=password, pic=pic_base64)
     new_user = crud.create_user(db=db, user=user)
     face_id = index_face('StudentFaces', pic_data, str(new_user.id))
-    print(face_id)
     return new_user
 
 @router.post("/auth", response_model=schemas.Token, tags=["auth"])
@@ -131,7 +124,6 @@ async def login_for_access_token(form_data: schemas.AuthForm, db: Session = Depe
 async def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     email = get_email_from_token(token)
     user = crud.get_user_by_email(db, email)
-    print(jsonable_encoder(user))
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -181,17 +173,18 @@ def register_course_endpoint(db: Session = Depends(get_db), user_id: int = Form(
 def get_registered_courses_endpoint(user_id: int, db: Session = Depends(get_db)):
     return crud.get_registered_courses(db, user_id)
 
-@router.post("/attendance", response_model=schemas.Attendance)
+@router.post("/attendance", response_model=schemas.Attendance, status_code=200)
 def create_attendance_endpoint(db: Session = Depends(get_db), 
-                                semester: str = Form(...),
-                                semester_type: str = Form(...),
-                                user_id: int = Form(...),
+                               image:UploadFile = Form(...),
                                 time: str = Form(...),
                                 day: str = Form(...),
                                 date: str = Form(...)):
     # create check attendance
-
+    semester = 'Fall'
+    semester_type = 'General'
     slot = find_slot(day, time)
+    image_bytes = image.read()
+    user_id = recognize_face('StudentFaces', image_bytes)
     if not slot:
         raise HTTPException(status_code=400, detail="Invalid time")
     course = crud.get_course_by_slot(db, semester, semester_type, slot)

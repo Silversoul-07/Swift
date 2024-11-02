@@ -29,6 +29,7 @@ const Home = () => {
 
         // Fetch user session
         const sessionResponse = await axiosInstance.get('/api/session');
+        console.log(sessionResponse.data);
         setUser(sessionResponse.data);
 
         // Fetch registered courses

@@ -18,7 +18,7 @@ class UserResponse(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class Token(BaseModel):
     access_token: str
@@ -42,7 +42,7 @@ class CourseBase(BaseModel):
     faculty_school: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CourseRegister(CourseBase):
     registered: bool
@@ -74,3 +74,7 @@ class AttendanceView(BaseModel):
 class Registration(BaseModel):
     user_id: int
     course_id: int
+
+class ImageData(BaseModel):
+    image: str
+    timestamp: datetime

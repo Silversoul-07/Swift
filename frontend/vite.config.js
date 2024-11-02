@@ -2,15 +2,16 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true, // Add this for Docker
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://backend:8000', // Use Docker service name
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api'),
+        secure: false,
       },
     },
   },
