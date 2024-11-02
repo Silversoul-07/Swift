@@ -1,4 +1,4 @@
-from fastapi import  Depends, HTTPException, status, APIRouter, Form, File, UploadFile
+from fastapi import  Depends, HTTPException, status, APIRouter, Form, File, UploadFile, Request, Response
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.encoders import jsonable_encoder
 
@@ -106,7 +106,7 @@ def create_user(
     return new_user
 
 @router.post("/auth", response_model=schemas.Token, tags=["auth"])
-async def login_for_access_token(form_data: schemas.AuthForm, db: Session = Depends(get_db) ):
+async def login_for_access_token(form_data: schemas.AuthForm, db: Session = Depends(get_db), response: Response = None):
     user = authenticate_user(db, form_data.email, form_data.password)
     if not user:
         raise HTTPException(
@@ -118,6 +118,8 @@ async def login_for_access_token(form_data: schemas.AuthForm, db: Session = Depe
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
+    # set token auth header
+    response.set_cookie(key="token", value=f"Bearer {access_token}", httponly=True)
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/session", response_model=schemas.UserResponse, tags=["auth"])
@@ -158,7 +160,7 @@ def create_course_endpoint(
     return crud.create_course(db, **kwargs)
 
 @router.get("/courses", response_model=List[schemas.CourseRegister])
-def get_courses_endpoint(db: Session = Depends(get_db), semester: str = "Fall", semester_type: str = "General", token: str = Depends(oauth2_scheme)):
+def get_courses_endpoint(db: Session = Depends(get_db), semester: str = "fall", semester_type: str = "general", token: str = Depends(oauth2_scheme)):
     email = get_email_from_token(token)
     user = crud.get_user_by_email(db, email)
     return crud.get_all_courses(db, semester, semester_type, user.id)

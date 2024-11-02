@@ -39,7 +39,7 @@ ctrl + c
 
 ### 3. Delete the containers
 
-To remove all stopped containers, networks, and volumes created by `docker-compose up`:
+To remove all stopped containers, networks, and volumes created by `compose up`:
 
 ```bash
 docker-compose down --volumes
