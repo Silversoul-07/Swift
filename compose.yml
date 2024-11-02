@@ -7,7 +7,7 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/roster
       - AWS_ACCESS_KEY=AKIA57VDLO53THKWPBQQ
       - AWS_SECRET_KEY=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
 
