@@ -26,18 +26,19 @@ Use Docker Compose to build and run the containers.
 docker-compose up --build
 ```
 
-- `--build`: Forces a rebuild of the images if there are changes in the Dockerfile or other configuration files.
-
-
 ### 3. Stop the containers
 
-To stop the containers use CTRL + c
+To stop the containers
 
 ```bash
 ctrl + c
 ```
 
-### 3. Delete the containers
+### 3. Accessing the Application
+
+Once the containers are up, you can access your application by navigating to [http://localhost:3000](http://localhost:3000) in your browser.
+
+### 4. Delete the containers
 
 To remove all stopped containers, networks, and volumes created by `compose up`:
 
@@ -45,6 +46,4 @@ To remove all stopped containers, networks, and volumes created by `compose up`:
 docker-compose down --volumes
 ```
 
-### 4. Accessing the Application
 
-Once the containers are up, you can access your application by navigating to [http://localhost:3000](http://localhost:3000) in your browser.
