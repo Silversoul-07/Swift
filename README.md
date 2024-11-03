@@ -34,11 +34,11 @@ To stop the containers
 ctrl + c
 ```
 
-### 3. Accessing the Application
+### 4. Accessing the Application
 
 Once the containers are up, you can access your application by navigating to [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 4. Delete the containers
+### 5. Delete the containers
 
 To remove all stopped containers, networks, and volumes created by `compose up`:
 
