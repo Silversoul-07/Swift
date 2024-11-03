@@ -20,7 +20,7 @@ cd Swift
 
 ### 2. Build and Run the Docker Containers
 
-Use Docker Compose to build and run the containers.
+Convert .env.example file to .env and Use Docker Compose to build and run the containers. 
 
 ```bash
 docker-compose up --build
